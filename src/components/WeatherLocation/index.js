@@ -1,24 +1,9 @@
 import React, { Component } from 'react';
+import transformWeather from '../../services/transformWeather';
+import { api_weather } from '../../constants/api_url'
 import Location from './Location'
 import WeatherData from './WeatherData';
 import './styles.css';
-import { 
-    SUN,
-    WINDY,
- } from '../../constants/weathers';
-
- const location = "Buenos Aires,ar";
- const api_key = "f99bbd9e4959b513e9bd0d7f7356b38d";
- const url_base_weather = "http://api.openweathermap.org/data/2.5/weather";
-
- const api_weather = `${url_base_weather}?q=${location}&appid=${api_key}`;
-
- const data = {
-     temperature: 5,
-     weatherState: SUN,
-     humidity: 10,
-     wind: '10 m/s',
- }
 
 //componente funcional
 class WeatherLocation extends Component {
@@ -27,34 +12,27 @@ class WeatherLocation extends Component {
         super();
         this.state = {
             city: "Buenos Aires",
-            data: data
+            data: null
         }
+        console.log("constructor");
     }
-
-    getWeatherState = weather_data => {
-        return WINDY;
+    
+    //cdm
+    componentDidMount() {
+        console.log("componentDidMount");      
+        this.handleUpdateClick();     
     }
-
-    getData = weather_data => {
-        const { humidity, temp } = weather_data.main;
-        const { speed } = weather_data.wind;
-        const weatherState = this.getWeatherState(weather_data);
-
-        const data = {
-            humidity,
-            temperature: temp,
-            weatherState,
-            wind: `${speed} m/s`
-        }
-
-        return data;
+    //cdu
+    componentDidUpdate(prevProps, prevState) {
+        console.log("componentDidUpdate");             
     }
-
+        
     handleUpdateClick = () =>{
         fetch(api_weather).then(resolve => {            
             return resolve.json();
         }).then( data => {
-            const newWeather = this.getData(data);
+            console.log("Resultado del handleUpdateClick");
+            const newWeather = transformWeather(data);
             console.log(newWeather);            
             this.setState({
                 data: newWeather
@@ -62,12 +40,14 @@ class WeatherLocation extends Component {
         });        
     } 
     render(){
+        console.log("render");
         const { city, data } = this.state;
         return(
             <div className="weatherLocationCont">
                 <Location city={city}></Location>
-                <WeatherData data={data}></WeatherData>
-                <button onClick={this.handleUpdateClick}>Actualizar</button>
+                {data ? 
+                <WeatherData data={data}></WeatherData> :
+                "Cargando..."}
             </div>
         )
     }
