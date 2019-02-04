@@ -11,9 +11,10 @@ const cities = [
   'Lima,pe'
 ];
 
+
 class App extends Component {
   handleSelectedLocation = city =>{
-    console.log("handleSelectedLocation");
+    console.log(`handleSelectedLocation ${city}`);
   }
   render() {
     return (
